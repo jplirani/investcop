@@ -31,6 +31,7 @@ from ta.trend import MACD, SMAIndicator
 from ta.momentum import RSIIndicator
 import streamlit as st
 import datetime
+import tabulate
 
 ## Choose stock
 
