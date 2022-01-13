@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[25]:
-
-
 # -*- coding: utf-8 -*-
 """investcop-streamlit-original.ipynb
 
@@ -31,7 +25,6 @@ from ta.trend import MACD, SMAIndicator
 from ta.momentum import RSIIndicator
 import streamlit as st
 import datetime
-import tabulate
 
 ## Choose stock
 
@@ -58,7 +51,6 @@ file='./symbols/'+type+'.csv'
 symbolslist=open(file,'r').readlines()
 stocks=[symbol.strip('\n') for symbol in symbolslist]
 stock=st.sidebar.selectbox('Select type', stocks)
-#stock='ETH-USD' # ----> REMOVE
 today = datetime.date.today()
 before = today - datetime.timedelta(days=700)
 start_date = st.sidebar.date_input('Start date', before)
@@ -80,8 +72,6 @@ ticker_info=ticker.info
 
 #ticker_name=ticker_info['shortName']
 tickername=ticker_info['shortName']
-
-st.markdown('## '+tickername)
 
 #ydata.head()
 
@@ -121,28 +111,28 @@ rfi_end=data.query('RFI20>=70 and daybefore<70').index
 waves=[]
 
 
+
+
 if len(rfi_start)==0 or len(rfi_end)==0:
     st.error('No RSI')
-    waves=[]
-else:
-    lastmin=rfi_start[0]
-    lastmax=rfi_end[rfi_end>lastmin][0]
-    rfi=data.RFI20
-    for min in rfi_start:
-        if min < lastmax:
-          if lastmin > min:
-            lastmin=min
-         # print('lastmin=',lastmin)
-        else:
-          #print('new-entry:wave=',lastmin,lastmax)
-          waves.append((lastmin,lastmax))
-          if len(rfi_end[rfi_end>min])>0:
-            lastmax=rfi_end[rfi_end>min][0]
-            lastmin=min
-            #print('next max =',lastmax)
-          else:
-            break
-    waves=list(dict.fromkeys(waves))
+lastmin=rfi_start[0]
+lastmax=rfi_end[rfi_end>lastmin][0]
+rfi=data.RFI20
+for min in rfi_start:
+    if min < lastmax:
+      if lastmin > min:
+        lastmin=min
+     # print('lastmin=',lastmin)
+    else:
+      #print('new-entry:wave=',lastmin,lastmax)
+      waves.append((lastmin,lastmax))
+      if len(rfi_end[rfi_end>min])>0:
+        lastmax=rfi_end[rfi_end>min][0]
+        lastmin=min
+        #print('next max =',lastmax)
+      else:
+        break
+waves=list(dict.fromkeys(waves))
 
 #waves[0][0]
 # True max and mins
@@ -168,58 +158,59 @@ summary=pd.DataFrame(columns=['Type', 'Symbol', 'Description','Close','LastWaveS
 
 if len(truewaves)<1:
     st.error('No Waves')
-    line=np.zeros(21)
-    hasWave=False
-else:
-    LastWaveStart=truewaves[-1][0]
-    LastwaveEnd=truewaves[-1][1]
 
-    LastRFIEnd=rfi_end[-1]
-    LastRFIStart=rfi_start[-1]
+LastWaveStart=truewaves[-1][0]
+LastwaveEnd=truewaves[-1][1]
 
-    LastWavePeriod=LastwaveEnd - LastWaveStart
+LastRFIEnd=rfi_end[-1]
+LastRFIStart=rfi_start[-1]
 
-    LastWaveValueGain= data.loc[LastWaveStart:LastwaveEnd].Delta.sum()*100
+LastWavePeriod=LastwaveEnd - LastWaveStart
 
-    CurrentWaveRSIRestart=data.query('RFI20<30 and daybefore>30').index[-1] 
-    dmin=data.loc[CurrentWaveRSIRestart:].Close.argmin()
-    CurrentWaveStart=data.loc[CurrentWaveRSIRestart:].iloc[dmin].name        
+LastWaveValueGain= data.loc[LastWaveStart:LastwaveEnd].Delta.sum()*100
 
-    today = data.iloc[-1].name
-    CurrentPeriod= today - CurrentWaveStart
+CurrentWaveRSIRestart=data.query('RFI20<30 and daybefore>30').index[-1] 
+dmin=data.loc[CurrentWaveRSIRestart:].Close.argmin()
+CurrentWaveStart=data.loc[CurrentWaveRSIRestart:].iloc[dmin].name        
 
-    CurrentValueGain=data.loc[CurrentWaveStart:].Delta.sum()*100 # -->
+today = data.iloc[-1].name
+CurrentPeriod= today - CurrentWaveStart
 
-    TRelative=100*CurrentPeriod.days/LastWavePeriod.days #-->
+CurrentValueGain=data.loc[CurrentWaveStart:].Delta.sum()*100 # -->
 
-    GainRelative=100*CurrentValueGain/LastWaveValueGain # -->
+TRelative=100*CurrentPeriod.days/LastWavePeriod.days #-->
 
-    Congruence=abs(TRelative-GainRelative) # -->
+GainRelative=100*CurrentValueGain/LastWaveValueGain # -->
 
-    P= 100* (CurrentValueGain/LastWaveValueGain) / (abs(1-Congruence)) # -->
+Congruence=abs(TRelative-GainRelative) # -->
 
-    DeltaN=LastWavePeriod.days-CurrentPeriod.days # -->
+P= 100* (CurrentValueGain/LastWaveValueGain) / (abs(1-Congruence)) # -->
 
-    YieldEst= LastWaveValueGain - CurrentValueGain   #-->
+DeltaN=LastWavePeriod.days-CurrentPeriod.days # -->
 
-    GainPerDayCurrent= 100* (CurrentValueGain/CurrentPeriod.days)
+YieldEst= LastWaveValueGain - CurrentValueGain   #-->
 
-    GainPerDayEstimated= 100* (LastWaveValueGain - CurrentValueGain)/(LastWavePeriod.days - CurrentPeriod.days)
+GainPerDayCurrent= 100* (CurrentValueGain/CurrentPeriod.days)
 
-    Close=data.iloc[-1].Close
+GainPerDayEstimated= 100* (LastWaveValueGain - CurrentValueGain)/(LastWavePeriod.days - CurrentPeriod.days)
 
-    BollNeg2MA = (Close > data.iloc[-1]['Boll-']) and (Close <data.iloc[-1]['MA20'] )
+Close=data.iloc[-1].Close
 
-    MA2BollPos = (Close > data.iloc[-1]['MA20'] ) and (Close <data.iloc[-1]['Boll+'] )
-    hasWave=True
-    line= [type, tickersymbol, tickername,  Close, LastWaveStart,LastwaveEnd,LastWavePeriod,
-        LastWaveValueGain,CurrentWaveStart,CurrentPeriod, CurrentValueGain,TRelative,
-        GainRelative,Congruence,P,DeltaN,YieldEst,GainPerDayCurrent,GainPerDayEstimated,
-        BollNeg2MA,MA2BollPos]
+BollNeg2MA = (Close > data.iloc[-1]['Boll-']) and (Close <data.iloc[-1]['MA20'] )
+
+MA2BollPos = (Close > data.iloc[-1]['MA20'] ) and (Close <data.iloc[-1]['Boll+'] )
+
+line= [type, tickersymbol, tickername,  Close, LastWaveStart,LastwaveEnd,LastWavePeriod,
+    LastWaveValueGain,CurrentWaveStart,CurrentPeriod, CurrentValueGain,TRelative,
+    GainRelative,Congruence,P,DeltaN,YieldEst,GainPerDayCurrent,GainPerDayEstimated,
+    BollNeg2MA,MA2BollPos]
 #summary.loc[0] = line
 insert(summary,line)
 
-st.write('All-in-One')
+# Create analysis image
+st.write('Summary')
+#st.dataframe(summary.transpose())
+
 #Plot 3 - All-in-One + Waves
 fig, ax1 = plt.subplots()
 data.Close.plot(figsize=(20,10),title=tickername,marker='o',style='-',ax=ax1)
@@ -238,8 +229,7 @@ ax1.legend(loc='upper left')
 for truewave in truewaves:
     plt.plot([truewave[0]],data.loc[truewave[0]].Close,marker='+',color='red', markersize=30)
     plt.plot([truewave[1]],data.loc[truewave[1]].Close,marker='+',color='red', markersize=30)
-if hasWave:
-    plt.plot(CurrentWaveStart,data.loc[CurrentWaveStart].Close,marker='*',color='orange', markersize=30)
+plt.plot(CurrentWaveStart,data.loc[CurrentWaveStart].Close,marker='*',color='orange', markersize=30)
 
 # Axis 2
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
@@ -288,13 +278,8 @@ plt.yticks(list(range(0,110,10)))
 plt.legend(loc='upper left')
 st.pyplot(f2)
 
-# Create summary for Wave Analysis
-st.write('Summary')
-st.markdown(summary.round(decimals=2).transpose().to_markdown())
-#st.table(summary.iloc[:,:])
-#st.write(summary.iloc[:])
-#print(summary)
-
-
 st.write('Recent data ')
 st.dataframe(data.tail(10))
+
+# All-in-One
+st.write('All-in-One ')
