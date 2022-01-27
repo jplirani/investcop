@@ -126,23 +126,24 @@ if len(rfi_start)==0 or len(rfi_end)==0:
     waves=[]
 else:
     lastmin=rfi_start[0]
-    lastmax=rfi_end[rfi_end>lastmin][0]
-    rfi=data.RFI20
-    for min in rfi_start:
-        if min < lastmax:
-          if lastmin > min:
-            lastmin=min
-         # print('lastmin=',lastmin)
-        else:
-          #print('new-entry:wave=',lastmin,lastmax)
-          waves.append((lastmin,lastmax))
-          if len(rfi_end[rfi_end>min])>0:
-            lastmax=rfi_end[rfi_end>min][0]
-            lastmin=min
-            #print('next max =',lastmax)
-          else:
-            break
-    waves=list(dict.fromkeys(waves))
+    if len(rfi_end[rfi_end>lastmin])>0:        
+        lastmax=rfi_end[rfi_end>lastmin][0]
+        rfi=data.RFI20
+        for min in rfi_start:
+            if min < lastmax:
+                if lastmin > min:
+                    lastmin=min
+            # print('lastmin=',lastmin)
+            else:
+            #print('new-entry:wave=',lastmin,lastmax)
+                waves.append((lastmin,lastmax))
+                if len(rfi_end[rfi_end>min])>0:
+                    lastmax=rfi_end[rfi_end>min][0]
+                    lastmin=min
+                    #print('next max =',lastmax)
+                else:
+                    break
+        waves=list(dict.fromkeys(waves))
 
 #waves[0][0]
 # True max and mins
