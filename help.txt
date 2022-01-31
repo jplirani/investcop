@@ -1,2 +1,0 @@
-git remote set-url origin https://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@github.com/jplirani/investcop.git
-
