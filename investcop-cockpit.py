@@ -5,7 +5,7 @@
 
 # ### Date: 1/02/22
 
-# In[74]:
+# In[1]:
 
 
 #!/usr/bin/env python
@@ -44,27 +44,14 @@ import datetime
 import tabulate
 import plotly.express as px
 
-
-# In[75]:
-
-
 summary=pd.read_csv('summary.csv',low_memory=False)
 summary.drop(columns='Unnamed: 0',inplace=True)
-
-
-# In[76]:
-
-
-summary.head()
-
-
-# In[77]:
-
 
 ## Choose stock
 
 types=['all','bdr','cambio','cripto','fii','index','bov','commodities','etf','futures']
-rsiopts=['all','< 50','> 70']
+featopts=['GainRelative','GainPerDayCurrent', 'GainPerDayEstimated','LastWaveValueGain', 'Congruence']
+rsiopts=['all','<30','<50','<70','> 70']
 bollopts=['all','Boll-2MA','MA2Boll+']
 gainopts=['all','Q1','Q2','Q3','Q4']
 #stock="USDBRL=X"    # ETH-USD BTTL3.SA USDBRL=X  ^N225
@@ -84,7 +71,7 @@ def insert(df, row):
 # sidebar #
 ###########
 type1 = st.sidebar.selectbox('Select Market type', types)
-#symbolslist=open(file,'r').readlines()
+feature = st.sidebar.selectbox('Choose Analysis feature (y-axis)',featopts)
 rsi=st.sidebar.selectbox('Choose RSI option',rsiopts)
 boll=st.sidebar.selectbox('Choose Bollinger option',bollopts)
 top=st.sidebar.selectbox('Choose Gain Per Day filter',gainopts)
@@ -100,6 +87,15 @@ if type1=='all':
 else:
     data=summary.query("Type == @type1")
 
+if rsi=='<30':
+    data=data.query("(RSI > 0) & (RSI < 30)")
+elif rsi=='<50':
+    data=data.query("(RSI > 0) & (RSI < 50)")
+elif rsi=='<70':
+    data=data.query("(RSI > 0) & (RSI < 70)")
+elif rsi=='>70':
+    data=data.query("RSI > 70")
+    
 if top!='all':
     data=data.query("GainQuartile == @top")
 #boll='Boll-2MA'
@@ -107,41 +103,32 @@ if boll=='Boll-2MA':
    data=data[data['Boll-2MA'] == True]
 elif boll=='MA2Boll+':
     data=data[data['MA2Boll+'] == True]
-    
+   
+"""### InvestCop 
+   #### Cockpit """    
 
-    
-"""## InvestCop 
-   ### Cockpit """    
+## Plot
 
-st.markdown('## '+ type1)
+st.write(feature +' vs Period analysis ')
 
+fig2=px.scatter(data_frame=data,x='TRelative',y=feature,color='Type',hover_name='Symbol', title=feature + ' vs Period for Investment Types')
+
+lim1=max(data.TRelative)
+
+fig2.add_shape(type="line",
+    x0=-10, y0=-10, x1=lim1, y1=lim1,
+    line=dict(color="RoyalBlue",width=3))
+st.plotly_chart(fig2, use_container_width=True)
+
+# Histogram
 st.write('Gain Per Day Histogram')
-
 fig=px.histogram(data,x='GainPerDayCurrent',color='Type')
 st.plotly_chart(fig, use_container_width=True)
 
-
-#fig, ax1 = plt.subplots()
-#fig.tight_layout() 
-#st.pyplot(fig)
-#plt.close()
-
-
-## Plot
-###################
-# Set up main app #
-###################
-
-st.write('Relative Gain vs Period ')
-
-fig2=px.scatter(data_frame=data,x='TRelative',y='GainRelative',color='Type',hover_name='Symbol', title='Relative Gain vs Period for Investment Types')
-st.plotly_chart(fig2, use_container_width=True)
-
 # Create summary for Wave Analysis
-st.write('Summary')
-st.dataframe(summary)
+st.write('Filtered Summary data')
+st.dataframe(data)
 #st.markdown(summary.round(decimals=2).transpose().to_markdown())
 #st.table(summary.iloc[:,:])
 #st.write(summary.iloc[:])
 #print(summary)
-
