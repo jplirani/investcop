@@ -109,25 +109,35 @@ elif boll=='MA2Boll+':
 
 ## Plot
 
-st.write(feature +' vs Period analysis ')
+#st.write(feature +' vs Period analysis ')
 
-fig2=px.scatter(data_frame=data,x='TRelative',y=feature,color='Type',hover_name='Symbol', title=feature + ' vs Period for Investment Types')
+fig2=px.scatter(data_frame=data,x='TRelative',y=feature,color='Type',hover_name='Symbol', title=feature + ' vs Period for ' + type1 + ' market')
 
-lim1=max(data.TRelative)
+if data.TRelative.size > 0:
+    lim1=max(data.TRelative)
+else:
+    lim1=0
 
 fig2.add_shape(type="line",
     x0=-10, y0=-10, x1=lim1, y1=lim1,
     line=dict(color="RoyalBlue",width=3))
 st.plotly_chart(fig2, use_container_width=True)
 
-# Histogram
-st.write('Gain Per Day Histogram')
-fig=px.histogram(data,x='GainPerDayCurrent',color='Type')
-st.plotly_chart(fig, use_container_width=True)
-
-# Create summary for Wave Analysis
-st.write('Filtered Summary data')
+# Display table and download
+#st.success('Filtered Summary data')
 st.dataframe(data)
+st.download_button(label='Download CSV',data=data.to_csv(),mime='text/csv')
+
+# BoxPlot
+#st.write('Gain Per Day by Market type')
+st.success('BoxPlot Analysis')
+fig3=px.box(summary,y=feature,color='Type',hover_name='Symbol',title= feature + ' per Market Type - Box Plot')
+st.plotly_chart(fig3, use_container_width=True)
+
+# CAll Summary download
+st.success('All Summary data')
+st.download_button(label='Download complete Summary CSV',data=summary.to_csv(),mime='text/csv', file_name='summary.csv')
+
 #st.markdown(summary.round(decimals=2).transpose().to_markdown())
 #st.table(summary.iloc[:,:])
 #st.write(summary.iloc[:])
