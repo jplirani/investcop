@@ -50,8 +50,8 @@ summary.drop(columns='Unnamed: 0',inplace=True)
 ## Choose stock
 
 types=['all','bdr','cambio','cripto','fii','index','bov','commodities','etf','futures']
-featopts=['GainRelative','GainPerDayCurrent', 'GainPerDayEstimated','LastWaveValueGain', 'Congruence']
-rsiopts=['all','<30','<50','<70','> 70']
+featopts=['GainRelative','GainPerDayCurrent', 'GainPerDayEstimated','LastWaveValueGain', 'Congruence','DeltaN', 'YieldEst']
+rsiopts=['all','<30','<50','<70','>70']
 bollopts=['all','Boll-2MA','MA2Boll+']
 gainopts=['all','Q1','Q2','Q3','Q4']
 #stock="USDBRL=X"    # ETH-USD BTTL3.SA USDBRL=X  ^N225
@@ -127,6 +127,12 @@ st.plotly_chart(fig2, use_container_width=True)
 #st.success('Filtered Summary data')
 st.dataframe(data)
 st.download_button(label='Download CSV',data=data.to_csv(),mime='text/csv')
+
+# Watchlist
+st.success('Wacth list - ' + feature)
+watch=summary.query(f"({feature} > -5) & ({feature} < 5) & (TRelative > 10 ) & (TRelative < 100)")
+st.dataframe(watch)
+st.download_button(label='Download Watch List CSV',data=data.to_csv(),mime='text/csv')
 
 # BoxPlot
 #st.write('Gain Per Day by Market type')
