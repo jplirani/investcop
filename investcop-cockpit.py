@@ -43,6 +43,8 @@ import streamlit as st
 import datetime
 import tabulate
 import plotly.express as px
+import os
+import datetime
 
 summary=pd.read_csv('summary.csv',low_memory=False)
 summary.drop(columns='Unnamed: 0',inplace=True)
@@ -108,8 +110,17 @@ elif boll=='MA2Boll+':
    #### Cockpit """    
 
 ## Plot
-
-#st.write(feature +' vs Period analysis ')
+# last update info
+filename='summary.csv'
+def modification_date(filename):
+    t = os.path.getmtime(filename)
+    return datetime.datetime.fromtimestamp(t)
+date=modification_date(filename)
+tz=datetime.timezone(datetime.timedelta(hours=-4))
+datebr=date.astimezone(tz)
+horastr=datebr.strftime("%d/%b/%Y %H:%M")
+st.write('Last updated in: ' + horastr + ' (Brasilia)')
+#st.markdown('##### Last updated in: ' + horastr + ' (Brasilia)')
 
 fig2=px.scatter(data_frame=data,x='TRelative',y=feature,color='Type',hover_name='Symbol', title=feature + ' vs Period for ' + type1 + ' market')
 
