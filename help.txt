@@ -5,4 +5,9 @@ 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
 
 git push https://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@github.com/jplirani/investcop.git
 
-new commands
+git remote set-url origin https://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@github.com/jplirani/investcop.git
+
+origin	https://jplirani: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@github.com/jplirani/investcop.git (push)
+
+git remote set-url --push origin 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
+
