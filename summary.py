@@ -41,7 +41,7 @@ import dataframe_image as dfi
 #!ls '/content/drive/MyDrive/InvestCop-dev/symbols/'
 
 types=['bdr','cambio','cripto','fii','index','bov','commodities','etf','futures']
-types=['cripto']
+#types=['cripto']
 
 """## Choose stock
 
