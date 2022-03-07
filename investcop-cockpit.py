@@ -49,6 +49,12 @@ import datetime
 summary=pd.read_csv('summary.csv',low_memory=False)
 summary.drop(columns='Unnamed: 0',inplace=True)
 
+def period2int(string):
+    first=int(string.split(' ')[0])
+    return first
+
+summary.CurrentPeriod=summary.CurrentPeriod.apply(period2int)
+
 ## Choose stock
 
 types=['all','bdr','cambio','cripto','fii','index','bov','commodities','etf','futures']
@@ -159,3 +165,31 @@ st.download_button(label='Download complete Summary CSV',data=summary.to_csv(),m
 #st.table(summary.iloc[:,:])
 #st.write(summary.iloc[:])
 #print(summary)
+
+st.success('Buy and Sell')
+
+# Filtro PRE COMPRA
+pre=summary.query("(CurrentPeriod>2) & (DeltaN >0) & (YieldEst>0) &(TRelative<50)  &(TRelative>0) & (GainRelative<50)  & (GainRelative>0) & (GainPerDayEstimated>10)")
+st.dataframe(pre)
+st.download_button(label='Download PRE BUY List CSV',data=pre.to_csv(),mime='text/csv')
+
+# Filtro COMPRA
+buy=summary[summary['MA2Boll+'] == True].query(f" (DeltaN >0) & (YieldEst>10) &(TRelative<50) &(TRelative>0) & (GainRelative<50) & (GainRelative>0) & (GainPerDayEstimated>10) &(RSI<60) & (GainRelative > TRelative ) ")
+st.dataframe(buy)
+st.download_button(label='Download BUY List CSV',data=buy.to_csv(),mime='text/csv')
+
+# Filtro VENDA
+#sell= summary.query(f" ('MA2Boll+'==True)& (DeltaN >0) & (YieldEst>0) &(TRelative<50) & (GainRelative<50) & (GainPerDayEstimated>10) &(RSI<60) & (GainRelative > TRelative )   ")
+# COND 1
+cond1=summary.copy().query("(TRelative>0) & (GainRelative>0) & (Congruence>-5) & (Congruence<5)")
+cond1['Cond']='Cond 1'
+
+# COND 2 GainToday < Gain Yesterday
+
+# COND 3
+cond3=summary.copy()[summary['MA2Boll+'] == True].query(f" (Congruence>-5) & (RSI>65)")
+cond3['Cond']='Cond 3'
+
+sell=pd.concat([cond1,cond3])
+st.dataframe(sell)
+st.download_button(label='Download SELL List CSV',data=sell.to_csv(),mime='text/csv')
