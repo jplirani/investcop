@@ -169,7 +169,14 @@ st.download_button(label='Download complete Summary CSV',data=summary.to_csv(),m
 st.success('Buy and Sell')
 
 # Filtro PRE COMPRA
-pre=summary.query("(CurrentPeriod>2) & (DeltaN >0) & (YieldEst>0) &(TRelative<50)  &(TRelative>0) & (GainRelative<50)  & (GainRelative>0) & (GainPerDayEstimated>10)")
+#pre0=summary.query("(CurrentPeriod>2) & (DeltaN >0) & (YieldEst>0) &(TRelative<50)  &(TRelative>0) & (GainRelative<50)  & (GainRelative>0) & (GainPerDayEstimated>10)")
+pre1=summary[summary['MA2Boll+'] == False].query(f" (YieldEst>10) &(P>2) &(RSI<50)")
+pre1['Cond']='Cond 1'
+
+pre2=summary.query("(CurrentPeriod==1) | (CurrentPeriod==2)")
+pre2['Cond']='Cond 2'
+pre=pd.concat([pre1,pre2])
+
 st.dataframe(pre)
 st.download_button(label='Download PRE BUY List CSV',data=pre.to_csv(),mime='text/csv')
 

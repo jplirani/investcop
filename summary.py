@@ -294,4 +294,15 @@ ftp.quit()
 
 file.close()
 
+# loaclweb
+ftp=FTP('ftp.investscorp.com.br')
+ftp.login(user='investscorp1',passwd='Tank76retJRCS!')
+ftp.cwd('web')
+file=open('summary.csv','rb')
+ftp.storbinary('STOR summary.csv',file)
+
+ftp.quit()
+
+file.close()
+
 print('DONE')
