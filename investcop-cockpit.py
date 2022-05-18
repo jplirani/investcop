@@ -196,7 +196,7 @@ st.download_button(label='Download PRE BUY List CSV',data=pre.to_csv(),mime='tex
 YieldEst>10, e; MA2Boll+=TRUE, RSI<60, e; Grel.>Trel.=TRUE , RSI>Grel.=TRUE   
 '''
 #buy=summary[summary['MA2Boll+'] == True].query(f" (DeltaN >0) & (YieldEst>10) &(TRelative<50) &(TRelative>0) & (GainRelative<50) & (GainRelative>0) & (GainPerDayEstimated>10) &(RSI<60) & (GainRelative > TRelative ) ")
-buy=summary[summary['MA2Boll+'] == True].query(f"  (YieldEst>10) &(RSI<60) & (GainRelative > TRelative) &(RSI>GainRelative ")
+buy=summary[summary['MA2Boll+'] == True].query(f"  (YieldEst>10) &(RSI<60) & (GainRelative > TRelative) &(RSI>GainRelative) ")
 st.dataframe(buy)
 st.download_button(label='Download BUY List CSV',data=buy.to_csv(),mime='text/csv')
 
