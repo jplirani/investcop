@@ -169,9 +169,8 @@ st.download_button(label='Download complete Summary CSV',data=summary.to_csv(),m
 st.success('Buy and Sell')
 
 # Filtro PRE COMP
-'''
-P>2, Yieldest>10, MA2Boll+=FALSE, RSI20<50,Grel.>Trel.=TRUE RSI>Grel.=TRUE
-'''
+# Filtro 1
+# P>2, Yieldest>10, MA2Boll+=FALSE, RSI20<50,Grel.>Trel.=TRUE RSI>Grel.=TRUE
 
 #pre0=summary.query("(CurrentPeriod>2) & (DeltaN >0) & (YieldEst>0) &(TRelative<50)  &(TRelative>0) & (GainRelative<50)  & (GainRelative>0) & (GainPerDayEstimated>10)")
 #pre1=summary[summary['MA2Boll+'] == False].query(f" (YieldEst>10) &(P>2) &(RSI<50)")
@@ -179,10 +178,10 @@ pre1=summary[summary['MA2Boll+'] == False].query(f" (YieldEst>10) &(P>2) &(RSI<5
 pre1['Cond']='Cond 1'
 
 
-'''
-CurrentPeriod=1, CurrentPerirod=2, Yieldest>10,MA2Boll+=FALSE, RSI20<50,Grel.>Trel. =TRUE , RSI>Grel.=TRUE
+# Filtro 2
+#CurrentPeriod=1, CurrentPerirod=2, Yieldest>10,MA2Boll+=FALSE, RSI20<50,Grel.>Trel. =TRUE , RSI>Grel.=TRUE
 
-'''
+
 #pre2=summary.query("(CurrentPeriod==1) | (CurrentPeriod==2)")
 pre2=summary[summary['MA2Boll+'] == False].query(f"(CurrentPeriod==1) | (CurrentPeriod==2) & (YieldEst>10)  &(RSI<50) &(GainRelative>TRelative) &(RSI>GainRelative)")
 pre2['Cond']='Cond 2'
@@ -192,30 +191,27 @@ st.dataframe(pre)
 st.download_button(label='Download PRE BUY List CSV',data=pre.to_csv(),mime='text/csv')
 
 # Filtro COMPRA
-'''
-YieldEst>10, e; MA2Boll+=TRUE, RSI<60, e; Grel.>Trel.=TRUE , RSI>Grel.=TRUE   
-'''
+#YieldEst>10, e; MA2Boll+=TRUE, RSI<60, e; Grel.>Trel.=TRUE , RSI>Grel.=TRUE   
+
 #buy=summary[summary['MA2Boll+'] == True].query(f" (DeltaN >0) & (YieldEst>10) &(TRelative<50) &(TRelative>0) & (GainRelative<50) & (GainRelative>0) & (GainPerDayEstimated>10) &(RSI<60) & (GainRelative > TRelative ) ")
 buy=summary[summary['MA2Boll+'] == True].query(f"  (YieldEst>10) &(RSI<60) & (GainRelative > TRelative) &(RSI>GainRelative) ")
 st.dataframe(buy)
 st.download_button(label='Download BUY List CSV',data=buy.to_csv(),mime='text/csv')
 
 # Filtro VENDA
-'''
-RSI>80%
-'''
+
 #sell= summary.query(f" ('MA2Boll+'==True)& (DeltaN >0) & (YieldEst>0) &(TRelative<50) & (GainRelative<50) & (GainPerDayEstimated>10) &(RSI<60) & (GainRelative > TRelative )   ")
 # COND 1
+#RSI>80%
 #cond1=summary.copy().query("(TRelative>0) & (GainRelative>0) & (Congruence>-5) & (Congruence<5)")
-cond1=summary.copy().query(f" &(RSI>80)")
+cond1=summary.copy().query(f"(RSI>80)")
 cond1['Cond']='Cond 1'
 
 # COND 2 GainToday < Gain Yesterday
-'''
-2a. CONDIÇÃO:
-RSI>65%
-'''
-cond2=summary.copy().query(f" &(RSI>65)")
+# 2a. CONDIÇÃO:
+#RSI>65%
+
+cond2=summary.copy().query(f"(RSI>65)")
 cond2['Cond']='Cond 2'
 
 # COND 3
