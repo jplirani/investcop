@@ -81,14 +81,21 @@ for type in types:
   for tickersymbol in symbols:
     print('symbol:',tickersymbol)
     ticker=tickers.tickers[tickersymbol]
-    ydata = ticker.history(period=period)    
-    tickername=tickersymbol
-    
-    data = ydata[['Close']].copy()
+    ydata = ticker.history(period=period)
+    '''
+    ticker_info=ticker.info
+    if 'shortName' in ticker_info.keys():
+      tickername=ticker_info['shortName']
+    else:
+      tickername=tickersymbol
+    '''  
+    tickername=tickersymbol # Fast  
+    #ydata.head()
+    data=ydata[['Close']].copy()
     #data.head()
     # data check if not empty dataset
     if data.size<10:
-      continue  
+      continue
     
     data['Delta']=data.Close/data.Close.shift(1) - 1
     data['MA20']=data.Close.rolling(20).mean()
