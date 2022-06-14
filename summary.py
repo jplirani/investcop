@@ -82,22 +82,28 @@ for type in types:
     print('symbol:',tickersymbol)
     ticker=tickers.tickers[tickersymbol]
     ydata = ticker.history(period=period)
+    
+     '''
     ticker_info=ticker.info
     if 'shortName' in ticker_info.keys():
       tickername=ticker_info['shortName']
     else:
       tickername=tickersymbol
+    '''  
+    tickername=tickersymbol # Fast  
     #ydata.head()
     data=ydata[['Close']].copy()
     #data.head()
     # data check if not empty dataset
     if data.size<10:
-      continue
-    data.isna().sum()
-    #data.info()
-    #data.describe()
+      continue  
+    
     data['Delta']=data.Close/data.Close.shift(1) - 1
     data['MA20']=data.Close.rolling(20).mean()
+    data['MA50']=data.Close.rolling(50).mean()
+    data['MA100']=data.Close.rolling(100).mean()
+    data['MA200']=data.Close.rolling(200).mean()
+    data['MA8W']=data.Close.rolling(56).mean()
     data['Boll+']=data['MA20'] + 2*data.Close.rolling(20).std()
     data['Boll-']=data['MA20'] - 2*data.Close.rolling(20).std()
     data['PosDiff']=data.Close - data.Close.shift(1)
