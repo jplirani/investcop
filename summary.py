@@ -9,6 +9,7 @@ Original file is located at
 # InvestCop
 ## Main DataFrame to generate Analysis Data from Yahoo Finance
 ## Multiple stocks , Bulk Generation of Data and Summary
+## FAST Edt
 ## Sends Summary by FTP
 ## Date: 24/01/21
 """
