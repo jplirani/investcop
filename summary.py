@@ -290,7 +290,7 @@ summary.round(decimals=2).to_csv('summary.csv')
 # Sends Summary by FTP
 from ftplib import FTP
 ftp=FTP('155.254.244.39')
-ftp.login(user='sergiobarrosgoku',passwd='Raul2808*')
+ftp.login(user='sergiobarrosgoku',passwd='tank76retJRS!!')
 ftp.cwd('www.Investcop.somee.com')
 
 file=open('summary.csv','rb')
@@ -302,7 +302,7 @@ file.close()
 
 # loaclweb
 ftp=FTP('ftp.investscorp.com.br')
-ftp.login(user='investscorp1',passwd='Tank76retJRCS!')
+ftp.login(user='investscorp1',passwd='tank76retJRS!!')
 ftp.cwd('web')
 file=open('summary.csv','rb')
 ftp.storbinary('STOR summary.csv',file)
